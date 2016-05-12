@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Builder;
+﻿using System.Net.WebSockets;
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,11 +30,37 @@ namespace PowerService
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            PowerApp.Current = new PowerApp(Configuration.GetSection("RedisConfiguration"));
+            PowerApp.Current.Subscribe(Broadcast);
+
             app.UseIISPlatformHandler();
             app.UseStaticFiles();
             app.UseMvc();
+            app.UseWebSockets();
 
-            PowerApp.Current = new PowerApp(Configuration.GetSection("RedisConfiguration"));
+            app.Use(async (http, next) =>
+            {
+                if (http.WebSockets.IsWebSocketRequest)
+                {
+                    var socket = await http.WebSockets.AcceptWebSocketAsync();
+
+                    if (socket != null && socket.State == WebSocketState.Open)
+                    {
+                        WebSocketConnections.AddSocket(socket);
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+            });
+        }
+
+        private void Broadcast(string message)
+        {
+            // TODO: Transform message...
+
+            WebSocketConnections.Broadcast(message).Wait();
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);
