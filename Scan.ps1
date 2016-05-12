@@ -78,8 +78,7 @@ while($true)
 
     $json = $measurement | ConvertTo-Json -Compress
           
-    $subscriber = $connection.GetSubscriber()  
-    $subscriber.Publish("powerservice", $json) | Out-Null
+    $connection.GetSubscriber().Publish("powerservice", $json) | Out-Null
 
     Write-Host "Published: $json"
         

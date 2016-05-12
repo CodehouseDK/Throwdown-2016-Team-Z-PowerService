@@ -1,11 +1,9 @@
-﻿var output;
-var widget;
+﻿var widget;
 
 function init() {
-    output = document.getElementById("output");
     widget = document.getElementById("widget");
 
-    print("Connecting...");
+    console.log("connecting...");
 
     websocket = new WebSocket("ws://localhost:51842");
     websocket.onopen = function (evt) { onOpen(evt) };
@@ -15,32 +13,24 @@ function init() {
 }
 
 function onOpen(evt) {
-    print("Connected!");
+    console.log("connected.");
 }
 
 function onClose(evt) {
-    print("Disconnected...");
+    console.log("disconnected...");
 
     init();
 }
 
 function onError(evt) {
-    print('<span style="color: red;">ERROR:</span> ' + evt.data);
-}
-
-function print(message) {
-    var pre = document.createElement("p");
-
-    pre.innerHTML = message;
-
-    output.appendChild(pre);
+    console.log("socket error")
 }
 
 function onMessage(evt) {
     var data = JSON.parse(evt.data);
     var html = "<h1>CPU Load: " + Math.round(data.AverageLoad) + "%</h1>";
 
-    html += "<h2>" + (data.AvailableMhz / 1000) + " Ghz available across " + data.AvailableCores + " cores on " + data.Computers + " workstations</h2>";
+    html += "<h2>" + Math.round(data.AvailableMhz / 1000) + " Ghz available across " + data.AvailableCores + " cores on " + data.Computers + " workstations</h2>";
     html += "<h3>Updated: " + data.Timestamp + "</h3>";
 
     widget.innerHTML = html;
