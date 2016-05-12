@@ -58,7 +58,7 @@ namespace PowerService
 
         private void Broadcast(string message)
         {
-            // TODO: Transform message...
+            // TODO: Transform message to something the dashboard expects?
 
             WebSocketConnections.Broadcast(message).Wait();
         }
