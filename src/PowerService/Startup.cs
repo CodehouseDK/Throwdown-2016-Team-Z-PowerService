@@ -10,10 +10,10 @@ namespace PowerService
     {
         public Startup(IHostingEnvironment env)
         {
-            // Set up configuration sources.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -28,10 +28,12 @@ namespace PowerService
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            
+
             app.UseIISPlatformHandler();
             app.UseStaticFiles();
             app.UseMvc();
+
+            PowerApp.Current = new PowerApp(Configuration.GetSection("RedisConfiguration"));
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);

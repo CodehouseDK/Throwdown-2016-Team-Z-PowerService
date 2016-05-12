@@ -4,7 +4,7 @@ using Microsoft.AspNet.Mvc;
 namespace PowerService.Controllers
 {
     [Route("api/[controller]")]
-    public class PsuController : Controller
+    public class PowerController : Controller
     {
         [HttpGet]
         public IEnumerable<string> Get()
