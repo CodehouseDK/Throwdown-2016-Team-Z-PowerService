@@ -1,40 +1,75 @@
-﻿var widget;
+﻿require("../styles/widget.css");
 
-function init() {
-    widget = document.getElementById("widget");
+var Gauge = require("../scripts/gauge.min.js").Gauge;
 
-    console.log("connecting...");
+window.powerservice = (function () {
+    var exports = {};
+  
+    exports.init = function (id, url) {
+        console.log("connecting...");
 
-    websocket = new WebSocket("ws://localhost:51842");
-    websocket.onopen = function (evt) { onOpen(evt) };
-    websocket.onclose = function (evt) { onClose(evt) };
-    websocket.onmessage = function (evt) { onMessage(evt) };
-    websocket.onerror = function (evt) { onError(evt) };
-}
+        // UI crap, sorry mum...
+        var widget = document.getElementById(id);
+        var container = document.createElement("div");
 
-function onOpen(evt) {
-    console.log("connected", evt);
-}
+        container.id = "powercontainer";
 
-function onClose(evt) {
-    console.log("disconnected...", evt);
+        widget.appendChild(container);
 
-    init();
-}
+        var cpuLoad = document.createElement("div");
 
-function onError(evt) {
-    console.log("socket error", evt)    
-}
+        cpuLoad.id = "powerload";
+        cpuLoad.innerHTML = "<h1>CPU load 0%</h1>";
 
-function onMessage(evt) {
-    var data = JSON.parse(evt.data);
-    var html = "";
+        container.appendChild(cpuLoad);
 
-    html += "<h1>CPU load: " + Math.round(data.AverageLoad) + "%</h1>";
-    html += "<h2>" + Math.round(data.AvailableMhz / 1000) + " Ghz available across " + data.AvailableCores + " cores on " + data.Computers + " workstations</h2>";
-    html += "<h3>Updated: " + data.Timestamp + "</h3>";
+        var canvas = document.createElement("canvas");
 
-    widget.innerHTML = html;
-}
+        canvas.id = "powercanvas";
 
-window.addEventListener("load", init, false);
+        container.appendChild(canvas);
+       
+        var stats = document.createElement("div");
+
+        stats.id = "powerstats";
+        stats.innerHTML = "<h2>0 Ghz, 0 cores, 0 workstations</h2>";
+
+        container.appendChild(stats);
+
+        var opts = {
+            lines: 15,
+            angle: 0.15,
+            lineWidth: 0.35,
+            pointer: {
+                length: 0.9,
+                strokeWidth: 0.044,
+                color: '#000000'
+            },
+            limitMax: 'true',
+            percentColors: [[0.0, "#68A691"], [0.50, "#ED8161"], [1.0, "#FF95A2"]],
+            strokeColor: '#E0E0E0',
+            generateGradient: true
+        };
+
+        var cpuGauge = new Gauge(document.querySelector("#powercanvas")).setOptions(opts); 
+
+        cpuGauge.maxValue = 100;
+        cpuGauge.animationSpeed = 20;
+        
+        // The real stuff...
+        var socket = new WebSocket(url);
+
+        socket.onopen = function (event) { console.log("connected", event); };
+        socket.onclose = function (event) { console.log("disconnected...", event); init(); };
+        socket.onerror = function (event) { console.log("socket error", event); };
+        socket.onmessage = function (event) {
+            var data = JSON.parse(event.data);
+
+            cpuLoad.innerHTML = "<h1>CPU load ~" + Math.round(data.AverageLoad) + "%</h1>";
+            cpuGauge.set(data.AverageLoad);
+            stats.innerHTML = "<h2>" + Math.round(data.AvailableMhz / 1000) + " Ghz, " + data.AvailableCores + " cores, " + data.Computers + " workstations, updated " + data.Timestamp.substring(data.Timestamp.indexOf("T") + 1, data.Timestamp.indexOf(".")) + "</h2>";
+        };
+    };
+
+    return exports;
+})();

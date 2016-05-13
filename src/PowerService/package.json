@@ -1,0 +1,32 @@
+{
+  "name": "teamz",
+  "version": "1.0.0",
+  "description": "Codehouse Throwdown 2016",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --watch"
+  },
+  "author": "Team Z",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^6.3.4",
+    "babel-core": "^6.7.2",
+    "babel-loader": "^6.2.1",
+    "babel-polyfill": "^6.7.2",
+    "babel-preset-es2015": "^6.3.13",
+    "css-loader": "^0.23.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.5",
+    "handlebars": "^4.0.5",
+    "handlebars-loader": "^1.1.4",
+    "html-loader": "^0.4.0",
+    "html-webpack-plugin": "^2.10.0",
+    "node-sass": "^3.4.2",
+    "promise": "^7.1.1",
+    "sass-loader": "^3.2.0",
+    "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
+    "vanilla-modal": "^1.3.0",
+    "webpack": "^1.13.0"
+  }
+}

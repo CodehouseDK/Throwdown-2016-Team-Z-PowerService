@@ -2,13 +2,18 @@
 <head>
     <meta charset="utf-8" />
     <title>Test</title>
-    <script language="javascript" type="text/javascript" src="scripts/app.js"></script>
+    <style>
+        body {
+            padding: 100px;
+            font-family:  'Segoe UI';
+        }
+    </style>
 </head>
 <body>
-    <div id="widget">
-        <h1>CPU Load: 0%</h1>
-        <h2>0 Ghz available across 0 cores on 0 workstations</h2>
-        <h3>Updated: Not yet...</h3>
-    </div>
+    <div id="widget"></div>
+    <script language="javascript" type="text/javascript" src="http://localhost:51842/scripts/bundle.js"></script>
+    <script>
+        window.powerservice.init("widget", "ws://localhost:51842");
+    </script>
 </body>
 </html>
