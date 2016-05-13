@@ -69,7 +69,7 @@ function Get-ComputerNames
 
 if($connection -eq $null)
 {
-    $connection = [StackExchange.Redis.ConnectionMultiplexer]::Connect("docker.local:6379")
+    $connection = [StackExchange.Redis.ConnectionMultiplexer]::Connect("10.20.34.216:6379")
 }
 
 if($admin -eq $null)
@@ -94,7 +94,7 @@ while($true)
     }
     
     $entries = @()
-    $computers | select -first 1000 | % {
+    $computers | select -first 5000 | % {
         $computerName = $_
 
         Write-Verbose "Querying $computerName..."
