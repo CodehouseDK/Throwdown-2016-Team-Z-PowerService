@@ -86,7 +86,7 @@ $loops = 0
 
 while($true)
 {
-    if($loops -gt 1000000)
+    if($loops -gt 100)
     {
         Write-Verbose "Time to refresh the list of online computers..."
         
@@ -110,7 +110,7 @@ while($true)
         }
     }
 
-    $measurement = @{ AvailableCores = 0;  AvailableMhz = 0; AverageLoad = 0; Timestamp = [DateTime]::UtcNow.ToString("O"); Computers = $entries.Count }
+    $measurement = @{ AvailableCores = 0;  AvailableMhz = 0; AverageLoad = 0; Timestamp = [DateTime]::Now.ToString("O"); Computers = $entries.Count }
 
     $entries | % {
         $measurement.AvailableCores += $_.NumberOfLogicalProcessors
