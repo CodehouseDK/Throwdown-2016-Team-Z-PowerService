@@ -57,11 +57,20 @@ window.powerservice = (function () {
         cpuGauge.animationSpeed = 20;
         
         // The real stuff...
+        connect(url, cpuLoad, cpuGauge, stats);
+    };
+
+    function connect(url, cpuLoad, cpuGauge, stats) {
         var socket = new WebSocket(url);
 
         socket.onopen = function (event) { console.log("connected", event); };
-        socket.onclose = function (event) { console.log("disconnected...", event); init(); };
         socket.onerror = function (event) { console.log("socket error", event); };
+        socket.onclose = function (event) {
+            console.log("disconnected...", event);
+
+            connect(url, cpuLoad, cpuGauge, stats);
+        };
+        
         socket.onmessage = function (event) {
             var data = JSON.parse(event.data);
 
@@ -69,7 +78,7 @@ window.powerservice = (function () {
             cpuGauge.set(data.AverageLoad);
             stats.innerHTML = "<h2>" + Math.round(data.AvailableMhz / 1000) + " Ghz, " + data.AvailableCores + " cores, " + data.Computers + " workstations, updated " + data.Timestamp.substring(data.Timestamp.indexOf("T") + 1, data.Timestamp.indexOf(".")) + "</h2>";
         };
-    };
+    }
 
     return exports;
 })();
